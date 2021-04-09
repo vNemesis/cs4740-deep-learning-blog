@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Using deep learning to make new videogame levels | Harman Uppal</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="./css/bootstrap.min.css">
+        <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous"> -->
+        <link rel="stylesheet" href="./css/highlight/atom-one-light.css">
+        <link rel="stylesheet" href="./css/main.css">
+    </head>
+    <header id="intro" class="jumbo-bg">
+        <div class="container pt-5">
+            <div class="row text-white bg-tint pt-2">
+                <div class="col-md-12">
+                    <h1>Using deep learning to make new videogame levels</h1>
+                    <div class="d-flex flex-row">
+                        <div class="p-2">By <strong>Harman Uppal</strong></div>
+                        <div class="p-2">8<sup>th</sup> April 2021</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <body data-bs-spy="scroll" data-bs-target="#nav-side" data-bs-offset="0" tabindex="0">
+
+        <div class="container-fluid">
+
+            <div class="row">
+
+                <div class="d-none d-lg-inline col-lg-2 offset-1">
+                    <div id="nav-side" class="list-group-flush position-sticky nav-sticky mt-5">
+                        <a class="list-group-item list-group-item-action" href="#intro">Introduction</a>
+                        <a class="list-group-item list-group-item-action" href="#what-is-a-generative-adversarial-network">What is a Generative Adversarial Network?</a>
+                        <a class="list-group-item list-group-item-action" href="#the-research">The research</a>
+                        <a class="list-group-item list-group-item-action" href="#worked-example">Worked example</a>
+                        <a class="list-group-item list-group-item-action" href="#conclusion">Conclusion</a>
+                        <a class="list-group-item list-group-item-action" href="#references">References</a>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <div class="container">           
+                        <div class="row mt-5">
+                            <div class="col-md-12">
+
+                                <!-- Introduction -->
+                                <h3 class="header-colour">Introduction</h3>
+    
+                                <p class="text-justify">
+                                    The video game industry is quickly becoming one of the largest in the entertainment sector and is estimated to reach around $200 billion by 2023.<sup><a href="#[1]">[1]</a></sup>
+                                    Video games have seen a rapidly increasing uptake especially since the start of the COVID-19 restrictions<sup><a href="#[1]">[1]</a></sup> and creators are being challenged to produce
+                                    and deliver quality content in shorter time frames.<sup><a href="#[2]">[2]</a></sup>
+                                    Thus, techniques and tools to create content more efficiently with a similar level of quality are in high demand.
+                                </p>
+    
+                                <p class="text-justify">
+                                    One approach being explored is the use of Deep learning to generate new game levels based on existing examples.
+                                    This involves the use of a deep learning technique such as a <strong>Generative Adversarial Network (GAN)</strong> to generate new images for levels to be created from. This blog will be based on a <a href="https://ieeexplore.ieee.org/document/8516539">research paper</a> in
+                                    2018 titled DOOM Level Generation using Generative Adversarial Networks by Edoardo Giacomello, Pier Luca Lanzi and Daniele Loiacono.
+                                    We will be looking at the work they conducted and how it works to generate a new game level with a Pytorch implementation as an example.
+                                </p>
+
+                                <p class="text-justify">
+                                    But to understand the work in the paper we must first look at what a GAN is and how it works.
+                                </p>
+                                <!-- Introduction -->
+
+
+                                <hr>
+    
+
+                                <!-- What is a GAN -->
+                                <h3 id="what-is-a-generative-adversarial-network" class="header-colour mt-3">What is a Generative Adversarial Network?</h3>
+    
+                                <p class="text-justify">
+                                    <strong>Generative Adversarial Networks</strong> are a form of <strong>deep learning artificial neural network</strong>.
+                                    They work by learning the data distribution from a dataset and generating new data with similar characteristics.
+                                    Two networks compete in a zero-sum game to help train the model to generate better data with one network generally
+                                    referred to as a generator and the other a discriminator. The generator's job is to create the new data and the
+                                    discriminator tries to determine if the new dataset is real or fake. The model improves by trying to trick the
+                                    discriminator into thinking generated data is real. Initially, the results will result in obvious fake data but
+                                    as the training progresses the model starts to generate more realistic results.
+                                </p>
+    
+                                <div class="row justify-content-center my-5">
+                                    <div class="col-md-8 text-center">
+                                        <div class="card border-0">
+                                            <img src="./images/google-gan.png" class="card-img-top" alt="google gan diagram">
+                                            <div class="card-body">
+                                                <small>Source: <a href="#[4]">[4]</a> - GAN example</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                    <!-- GAN Structure -->
+                                    <h5 class="header-colour mt-3">GAN Strucutre</h5>
+        
+                                    <p class="text-justify">
+                                        The image below shows the general layout of a GAN
+                                    </p>
+        
+                                    <div class="row justify-content-center my-5">
+                                        <div class="col-md-8 text-center">
+                                            <div class="card border-0">
+                                                <img src="./images/gan-diagram.png" class="card-img-top" alt="gan diagram">
+                                                <div class="card-body">
+                                                    <small>Diagram of GAN network with backpropagation highlighted</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p class="text-justify">
+                                        The process of a GAN is relatively simple and is as follows:                                           
+                                    </p>
+
+                                    <ul class="text-justify">
+                                        <li>First, a random input is used as a starting point for the generator and is usually just some uniform noise,
+                                            think of it as a lump of clay ready to be moulded. The noise is passed to the generator which produced a sample.</li>
+                                        <li>A sample is also taken from the real images and both are fed into the discriminator.</li>
+                                        <li>The output of the discriminator is then passed to the loss functions for both and calculated</li>
+                                        <li>Through backpropagation, signals are then sent to the generator and discriminator to update their weights accordingly</li>
+                                    </ul>
+
+                                    <p class="text-justify">
+                                        During the training phase either the discriminator or generator is paused whilst the other network trains to stop avoid issues with training loops.
+                                    </p>
+                                    <!-- GAN Structure -->
+
+                                    <!-- Loss Funtion -->
+                                    <h5 class="header-colour">Loss Function</h5>
+
+                                    <p class="text-justify">
+                                        A GAN is essentially trying to replicate a probability distribution; thus, their loss functions usually reflect the distance between the
+                                        distribution of generated and real data.
+                                    </p>
+                                    <!-- Loss Funtion -->
+
+                                    <!-- Examples -->
+                                    <h5 class="header-colour">Examples</h5>
+                                    <p class="text-justify">
+                                        GANs have generally been used to generate new images based on a dataset of other images.
+                                        The image below shows a GAN that used images of celebrities to generate new images of people that look very realistic.
+                                    </p>
+        
+                                    <div class="row justify-content-center my-5">
+                                        <div class="col-md-8 text-center">
+                                            <div class="card border-0">
+                                                <img src="./images/celeb-gan.png" class="card-img-top" alt="celeb gan">
+                                                <div class="card-body">
+                                                    <small>Source: <a href="#[3]">[3]</a> - Images of faces generated by a GAN trained of celebrity faces. </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Examples -->
+                                <!-- What is a GAN? -->
+
+
+                                <hr>
+
+
+                                <!-- The Research -->
+                                <h3 id="the-research" class="header-colour mt-3">The research</h3>
+
+                                <p class="text-justify">
+                                    The next question to ask is how a GAN can be used to make new video game levels? Well, the research paper studied uses a GAN to generate new greyscale maps
+                                    for a new level based on previous levels made by humans. Each level was extracted as a series of map images from WAD files which contain all information relating to a game level.
+                                    These maps showed features such as walls, floor elevation, pickup items, trigger zones for events etc. The image below shows what these images looked like.
+                                    The maps of choice were from the popular 1993 first-person shooter, Doom.
+                                </p>
+
+                                <div class="row justify-content-center my-5">
+                                    <div class="col-md-8 text-center">
+                                        <div class="card border-0">
+                                            <img src="./images/paper-inputs.png" class="card-img-top" alt="paper inputs">
+                                            <div class="card-body">
+                                                <small>Source: <a href="#[3]">[3]</a> - From left to right: the FloorMap, HeightMap, ThingsMap, and WallMap. </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="text-justify">
+                                    The way a game or tool would generate levels from these maps would be to use these images as a mask whilst apply procedural generation to create the content.
+                                    Being able to generate a new level layout like this would save hours of development time and would reduce the workload of developers to simply fixing any errors and applying finishing touches.
+                                </p>
+
+                                    <!-- The method -->
+                                    <h5 class="header-colour">The method</h5>
+
+                                    <p class="text-justify">
+                                        In the paper, the researchers tested two different methods of using GANs to generate these files. These were an unconditional and condition network.
+                                        The primary difference between the two was the conditional network’s generator was fed additional class information about each level.
+                                        They used a specific variant of GAN called the Wasserstein GAN with Gradient Penalty as it showed more stable results.
+                                        They also replaced the tanh activation function with a sigmoid function on the output layer as it was more suitable for greyscale images.
+                                    </p>
+
+                                        <h6 class="header-colour">Wasserstein GAN with Gradient Penalty (WGAN-GP)</h6>
+
+                                        <p class="text-justify">
+                                            (WGAN-GP) stuff
+                                        </p>
+
+                                        <h6 class="header-colour">Architecture used</h6>
+
+                                        <p class="text-justify">
+                                            To train the network they first extracted the images from 1000 WAD files as well as metadata for each level.
+                                            The images, metadata (for the conditional network) and Gaussian noise were fed into the generator which generated 6 new images.
+                                            The discriminator was fed either a generated or real image and trained to distinguish between the two.
+                                            The image below shows an outline of the model architecture they used:
+                                        </p>
+
+                                        <div class="row justify-content-center my-3">
+                                            <div class="col-md-8 text-center">
+                                                <div class="card border-0">
+                                                    <div class="card-body">
+                                                        <div>
+                                                            <img src="./images/paper-structure.png" class="h-50 w-50" alt="paper structure">
+                                                        </div>
+                                                        <small>Source: <a href="#[3]">[3]</a> - Architecture used to train GANs </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <!-- The method -->
+
+                                    <!-- The evaluation -->
+                                    <h5 class="header-colour">The evaluation</h5>
+
+                                    <p class="text-justify">
+                                        To evaluate the quality of level generated the researchers used several metrics.
+                                        They do not however that it is extremely difficult to perform this sort of analysis as so the metric only gave an estimation of the quality of a level when compared to real examples.
+                                        The metrics used were:
+                                    </p>
+
+                                    <ul class="text-justify">
+
+                                        <li>
+                                            <strong>The entropy of pixel distribution</strong>
+                                            <p class="text-justify">
+                                                By calculating the entropy of pixel distribution for both the generated and real images, the researchers were able to see how much information is encoded in each image.
+                                                This allowed them to compare the images and see how much extra information or noise on average was in the generated ones.
+                                                Similar entropy values are considered better results, so the aim was to get these average values as close as possible.
+                                            </p>
+                                        </li>
+
+                                        <li>
+                                            <strong>Average structural similarity</strong>
+                                            <p class="text-justify">
+                                                The Structural Similarity Index (SSIM) was used to analyse how similar the images were in terms of the luminance, the contrast, and the local structure.
+                                                It was provided as a value between 0 and 1 with 1 being the same image. 
+                                            </p>
+                                        </li>
+
+                                        <li>
+                                            <strong>Encoding Error</strong>
+                                            <p class="text-justify">
+                                                This metric was used to measure the meaningfulness of pixels produced by the generator. This was a calculation of how far a pixel was from a meaningful value.
+                                                For example, the pixels on a floor map are usually 0 or 255 indicating the presence of a floor or nothing.
+                                                If you have a range of pixels hovering around 180 this is not very meaningful as it doesn’t indicate the presence of a floor or not.
+                                                Thus, a floor map whose pixels are closely either to 255 or 0 has a better score for this metric.
+                                            </p>
+                                        </li>
+
+                                        <li>
+                                            <strong>Corner Error</strong>
+                                            <p class="text-justify">
+                                                The corner error was a measure of the structural complexity of a level. Researchers used a Harris detector to calculate the number of corners in a floor and wall map.
+                                                They then compared the average corner error between the generated and real images to see if the new levels were similar in complexity to human levels.
+                                            </p>
+                                        </li>
+                                    </ul>
+                                    <!-- The evaluation -->
+
+                                    <!-- The results -->
+                                    <h5 class="header-colour">The results</h5>
+
+                                    <p class="text-justify">
+                                        After training the networks the results were promising. They were able to generate good maps that could be used to create levels.
+                                        See this video which shows the images during the training process and some gameplay of a level created from the maps:
+                                    </p>
+
+                                    <div class="row justify-content-center my-5">
+                                        <div class="col-md-8 text-center">
+                                            <div class="card border-0">
+                                                <div class="card-body">
+                                                    <iframe
+                                                        width="100%"
+                                                        height="315"
+                                                        src="https://www.youtube.com/embed/K32FZ-tjQP4"
+                                                        title="YouTube video player"
+                                                        frameborder="0"
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        allowfullscreen></iframe>
+                                                        <small>Source: <a href="https://www.youtube.com/embed/K32FZ-tjQP4">https://www.youtube.com/embed/K32FZ-tjQP4</a></small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    
+                                    
+                                    <p class="text-justify">
+                                        The outcome was that the conditional network produced better samples and showed slightly better training results compared to the unconditional one.
+                                        This showed that the addition of metadata of the levels helped produce better levels closer to the human ones. The image below shows 3 levels generated by the conditional network.
+                                        In each column, from the top to the bottom, are the HeightMap and the WallMap of the DOOM level used to extract the features in input to the network,
+                                        the FloorMap, the HeightMap, the ThingsMap, and the WallMap of the level generated by the network.
+                                    </p>
+
+                                    <div class="row justify-content-center my-5">
+                                        <div class="col-md-8 text-center">
+                                            <div class="card border-0">
+                                                <div class="card-body">
+                                                    <div>
+                                                        <img src="./images/paper-results.png" class="h-50" alt="paper structure">
+                                                    </div>
+                                                    <small>Source: <a href="#[3]">[3]</a> - Generated images from conditional model </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- The results -->
+                                <!-- The Research -->
+
+
+                                <hr>
+
+
+                                <!-- Worked Example -->
+                                <h3 id="worked-example" class="header-colour mt-3">Worked Example</h3>
+
+                                <p class="text-justify">
+                                    Now let us take a look at how we can generate our own doom levels using a GAN.
+                                    For this, we are going to use PyTorch along with various others and build a WGAN- like the one used in the paper.
+                                </p>
+
+                                <div class="text-justify">
+                                    First lets import all the libraries we are going to need
+                                </div>
+
+                                <div class="ms-3">
+                                    <pre><code class="python">
+# Deep Learning libraries
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+import torchvision
+
+# Utils
+import matplotlib.pyplot as plt
+import numpy as np
+import time
+import datetime
+from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
+from torchvision.utils import save_image
+
+# Check if CUDA is available, If False and you have a CUDA GPU check your install of pytorch is correct.
+print(f"CUDA Available:{torch.cuda.is_available()}")
+                                    </code></pre>
+                                    <strong>Output:</strong>
+                                    <pre>CUDA Available:True</pre>
+                                </div>
+
+                                <p class="text-justify">
+                                    Now we are going to define two classes, the Generator and Discriminator.
+                                </p>
+
+                                <div class="ms-3">
+                                    <pre><code class="python">
+class Discriminator(nn.Module):
+    def __init__(self, channels_img, features_d):
+        super(Discriminator, self).__init__()
+        self.disc = nn.Sequential(
+            nn.Conv2d(channels_img, features_d, kernel_size=4, stride=2, padding=1),
+            nn.LeakyReLU(0.2),
+            self._block(features_d, features_d * 2, 4, 2, 1),
+            self._block(features_d * 2, features_d * 4, 4, 2, 1),
+            self._block(features_d * 4, features_d * 8, 4, 2, 1),
+            nn.Conv2d(features_d * 8, 1, kernel_size=4, stride=2, padding=0),
+        )
+
+    def _block(self, in_channels, out_channels, kernel_size, stride, padding):
+        return nn.Sequential(
+            nn.Conv2d(
+                in_channels, out_channels, kernel_size, stride, padding, bias=False,
+            ),
+            nn.InstanceNorm2d(out_channels, affine=True),
+            nn.LeakyReLU(0.2),
+        )
+
+    def forward(self, x):
+        return self.disc(x)
+                                    </code></pre>
+                                </div>
+
+                                <div class="ms-3">
+                                    <pre><code class="python">
+class Generator(nn.Module):
+    def __init__(self, channels_noise, channels_img, features_g):
+        super(Generator, self).__init__()
+        self.net = nn.Sequential(
+            self._block(channels_noise, features_g * 16, 4, 1, 0),
+            self._block(features_g * 16, features_g * 8, 4, 2, 1),
+            self._block(features_g * 8, features_g * 4, 4, 2, 1),
+            self._block(features_g * 4, features_g * 2, 4, 2, 1), 
+            nn.ConvTranspose2d(
+                features_g * 2, channels_img, kernel_size=4, stride=2, padding=1
+            ),
+            nn.Tanh(),
+        )
+
+    def _block(self, in_channels, out_channels, kernel_size, stride, padding):
+        return nn.Sequential(
+            nn.ConvTranspose2d(
+                in_channels, out_channels, kernel_size, stride, padding, bias=False,
+            ),
+            nn.BatchNorm2d(out_channels),
+            nn.ReLU(),
+        )
+
+    def forward(self, x):
+        return self.net(x)
+                                    </code></pre>
+                                </div>
+
+                                <p class="text-justify">
+                                    The forawrd method is our loss function and returns the self.x variable and
+                                    becuase it is different for both the Generator and Discriminator, we require two seperate networks.
+                                </p>
+
+                                <p class="text-justify">
+                                    The next two methods are helpers for the model.
+                                </p>
+
+                                <ul>
+                                    <li>The <strong>initialise_weights</strong> method is used to set the inital weight values for the models.</li>
+                                    <li>The <strong>gradient_penalty</strong> method is the extra part ontop of the GAN which will help produce better results.</li>
+                                </ul>
+
+                                <div class="ms-3">
+                                    <pre><code class="python">
+def initialise_weights(model):
+    for m in model.modules():
+        if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d, nn.BatchNorm2d)):
+            nn.init.normal_(m.weight.data, 0.0, 0.02)
+
+def gradient_penalty(critic, real, fake, device="cpu"):
+    BATCH_SIZE, C, H, W = real.shape
+    alpha = torch.rand((BATCH_SIZE, 1, 1, 1)).repeat(1, C, H, W).to(device)
+    interpolated_images = real * alpha + fake * (1 - alpha)
+
+    # Calculate dis scores
+    mixed_scores = dis(interpolated_images)
+
+    # Take the gradient of the scores with respect to the images
+    gradient = torch.autograd.grad(
+        inputs=interpolated_images,
+        outputs=mixed_scores,
+        grad_outputs=torch.ones_like(mixed_scores),
+        create_graph=True,
+        retain_graph=True,
+    )[0]
+    gradient = gradient.view(gradient.shape[0], -1)
+    gradient_norm = gradient.norm(2, dim=1)
+    gradient_penalty = torch.mean((gradient_norm - 1) ** 2)
+    return gradient_penalty
+                                    </code></pre>
+                                </div>
+
+                                <p class="text-justify">
+                                    The next part is where we train the WGAN-GP. We don't have access to the same dataset the researchers used so we only have 62 example images to train off.
+                                    Although this is not ideal you will still have an understanding of how it works and see some results. For this example, we will be training off the floormap data from the doom levels.
+                                </p>
+
+                                <div class="ms-3">
+                                    <pre><code class="python">
+# Set device to use
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using Device: {device}")
+
+# Hyperparameters
+LEARNING_RATE = 5e-5
+BATCH_SIZE = 8
+IMAGE_SIZE = 64
+CHANNELS_IMG = 3
+Z_DIM = 100
+NUM_EPOCHS = 2000
+FEATURES_DIS = 16
+FEATURES_GEN = 16
+CRITIC_ITERATIONS = 5
+LAMBDA_GP = 10
+BATCH_M_ONE = BATCH_SIZE - 1
+
+transforms = torchvision.transforms.Compose(
+    [
+        torchvision.transforms.Resize(IMAGE_SIZE),
+        torchvision.transforms.ToTensor(),
+        torchvision.transforms.Normalize(
+            [0.5 for _ in range(CHANNELS_IMG)], [0.5 for _ in range(CHANNELS_IMG)]),
+    ]
+)
+
+# Load in data from folder
+dataset = torchvision.datasets.ImageFolder('./doom-levels/output/floormap', transform=transforms)
+dataloader = torch.utils.data.DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
+
+# initialize gen and disc
+gen = Generator(Z_DIM, CHANNELS_IMG, FEATURES_GEN).to(device)
+dis = Discriminator(CHANNELS_IMG, FEATURES_DIS).to(device)
+initialise_weights(gen)
+initialise_weights(dis)
+
+# Initializate optimisers
+opt_gen = optim.RMSprop(gen.parameters(), lr=LEARNING_RATE)
+opt_dis = optim.RMSprop(dis.parameters(), lr=LEARNING_RATE)
+
+# Tensorboard plotting
+fixed_noise = torch.randn(32, Z_DIM, 1, 1).to(device)
+writer_real = SummaryWriter(f"logs/WGAN_GP/real")
+writer_fake = SummaryWriter(f"logs/WGAN_GP/fake")
+step = 0
+
+# Train models
+gen.train()
+dis.train()
+
+# Used to plot loss over epochs
+G_loss = []
+D_loss = []
+
+epoch_range=range(NUM_EPOCHS)
+
+# For timing total runtime
+time_zero = time.time()
+
+# Training loop
+for epoch in epoch_range:
+    for batch_idx, (real, _) in enumerate(dataloader):
+        real = real.to(device)
+        cur_batch_size = real.shape[0]
+
+        # Train dis: max E[dis(real)] - E[dis(fake)]
+        # equivalent to minimizing the negative of that
+        for _ in range(CRITIC_ITERATIONS):
+            noise = torch.randn(cur_batch_size, Z_DIM, 1, 1).to(device)
+            fake = gen(noise)
+            dis_real = dis(real).reshape(-1)
+            dis_fake = dis(fake).reshape(-1)
+            gp = gradient_penalty(dis, real, fake, device=device)
+            loss_dis = (-(torch.mean(dis_real) - torch.mean(dis_fake)) + LAMBDA_GP * gp)
+            dis.zero_grad()
+            loss_dis.backward(retain_graph=True)
+            opt_dis.step()
+
+        # Train Generator: max E[dis(gen_fake)] &lt;-&gt; min -E[dis(gen_fake)]
+        gen_fake = dis(fake).reshape(-1)
+        loss_gen = -torch.mean(gen_fake)
+        gen.zero_grad()
+        loss_gen.backward()
+        opt_gen.step()
+
+        # Print loss and output to tensorboard
+        if batch_idx % BATCH_M_ONE == 0 and batch_idx &gt; 0:
+            if epoch % 100 == 0:
+                print(
+                    f"Epoch [{epoch}/{NUM_EPOCHS}] Batch {batch_idx}/{len(dataloader)} \
+                    Loss D: {loss_dis:.4f}, loss G: {loss_gen:.4f}"
+                )
+
+            # Store losses
+            G_loss.append(loss_gen.item())
+            D_loss.append(loss_dis.item())
+
+            with torch.no_grad():
+                fake = gen(fixed_noise)
+                # take out (up to) 16 examples
+                img_grid_real = torchvision.utils.make_grid(real[:16], normalize=True)
+                img_grid_fake = torchvision.utils.make_grid(fake[:16], normalize=True)
+
+                # Saves sample images at the end
+                if epoch == NUM_EPOCHS - 1:
+                    save_image(img_grid_real, f"samples/epoch_real_{epoch}.png")
+                    save_image(img_grid_fake, f"samples/epoch_fake_{epoch}.png")
+                if epoch % 100 == 0:
+                    writer_real.add_image("Real", img_grid_real, global_step=step)
+                    writer_fake.add_image("Fake", img_grid_fake, global_step=step)
+
+            step += 1
+
+duration = time.time() - time_zero
+print('Ran in: {:.2f} seconds'.format(duration))
+                                    </code></pre>
+                                    <strong>Output:</strong>
+                                    <pre>
+Using Device: cuda
+Epoch [0/5000] Batch 7/8                     Loss D: -1.2003, loss G: 0.8627
+Epoch [100/5000] Batch 7/8                     Loss D: -231.7849, loss G: 180.9290
+Epoch [200/5000] Batch 7/8                     Loss D: -144.5087, loss G: 160.6312
+Epoch [300/5000] Batch 7/8                     Loss D: -84.0098, loss G: 172.4509
+Epoch [400/5000] Batch 7/8                     Loss D: -99.7711, loss G: 164.7505
+Epoch [500/5000] Batch 7/8                     Loss D: -72.4993, loss G: 176.8792
+Epoch [600/5000] Batch 7/8                     Loss D: -79.5695, loss G: 211.7260
+Epoch [700/5000] Batch 7/8                     Loss D: -111.1933, loss G: 221.7308
+Epoch [800/5000] Batch 7/8                     Loss D: -83.7620, loss G: 255.3176
+Epoch [900/5000] Batch 7/8                     Loss D: -84.1290, loss G: 258.6788
+Epoch [1000/5000] Batch 7/8                     Loss D: -116.0449, loss G: 266.9394
+Epoch [1100/5000] Batch 7/8                     Loss D: -111.6538, loss G: 271.6711
+Epoch [1200/5000] Batch 7/8                     Loss D: -52.7851, loss G: 277.5142
+Epoch [1300/5000] Batch 7/8                     Loss D: -99.8798, loss G: 286.4711
+Epoch [1400/5000] Batch 7/8                     Loss D: -104.2311, loss G: 297.4313
+Epoch [1500/5000] Batch 7/8                     Loss D: -124.0095, loss G: 306.1640
+Epoch [1600/5000] Batch 7/8                     Loss D: -95.8231, loss G: 304.7676
+Epoch [1700/5000] Batch 7/8                     Loss D: -82.8644, loss G: 305.4016
+Epoch [1800/5000] Batch 7/8                     Loss D: -101.7713, loss G: 321.3476
+Epoch [1900/5000] Batch 7/8                     Loss D: -108.1830, loss G: 304.7870
+Epoch [2000/5000] Batch 7/8                     Loss D: -132.9222, loss G: 301.5773
+Epoch [2100/5000] Batch 7/8                     Loss D: -112.2191, loss G: 322.6616
+Epoch [2200/5000] Batch 7/8                     Loss D: -111.8118, loss G: 310.4772
+Epoch [2300/5000] Batch 7/8                     Loss D: -133.5703, loss G: 302.1898
+Epoch [2400/5000] Batch 7/8                     Loss D: -94.7848, loss G: 311.8337
+Epoch [2500/5000] Batch 7/8                     Loss D: -93.2101, loss G: 308.0273
+Epoch [2600/5000] Batch 7/8                     Loss D: -93.8510, loss G: 309.8764
+Epoch [2700/5000] Batch 7/8                     Loss D: -94.8602, loss G: 315.9064
+Epoch [2800/5000] Batch 7/8                     Loss D: -75.4752, loss G: 297.9471
+Epoch [2900/5000] Batch 7/8                     Loss D: -70.4469, loss G: 321.6360
+Epoch [3000/5000] Batch 7/8                     Loss D: -87.0893, loss G: 312.9343
+Epoch [3100/5000] Batch 7/8                     Loss D: -163.6199, loss G: 311.5840
+Epoch [3200/5000] Batch 7/8                     Loss D: -115.2796, loss G: 315.9883
+Epoch [3300/5000] Batch 7/8                     Loss D: -109.5242, loss G: 318.4637
+Epoch [3400/5000] Batch 7/8                     Loss D: -106.9403, loss G: 293.0496
+Epoch [3500/5000] Batch 7/8                     Loss D: -98.5639, loss G: 303.0587
+Epoch [3600/5000] Batch 7/8                     Loss D: -81.0940, loss G: 305.5038
+Epoch [3700/5000] Batch 7/8                     Loss D: -109.5650, loss G: 304.7347
+Epoch [3800/5000] Batch 7/8                     Loss D: -102.8632, loss G: 312.2042
+Epoch [3900/5000] Batch 7/8                     Loss D: -105.1151, loss G: 290.9136
+Epoch [4000/5000] Batch 7/8                     Loss D: -83.8678, loss G: 300.5930
+Epoch [4100/5000] Batch 7/8                     Loss D: -55.3448, loss G: 293.0401
+Epoch [4200/5000] Batch 7/8                     Loss D: -154.4721, loss G: 301.8219
+Epoch [4300/5000] Batch 7/8                     Loss D: -116.6979, loss G: 295.3487
+Epoch [4400/5000] Batch 7/8                     Loss D: -67.9595, loss G: 292.4657
+Epoch [4500/5000] Batch 7/8                     Loss D: -78.2038, loss G: 306.4602
+Epoch [4600/5000] Batch 7/8                     Loss D: -96.4812, loss G: 288.8483
+Epoch [4700/5000] Batch 7/8                     Loss D: -132.3809, loss G: 299.9936
+Epoch [4800/5000] Batch 7/8                     Loss D: -86.5643, loss G: 303.8985
+Epoch [4900/5000] Batch 7/8                     Loss D: -92.8402, loss G: 298.2424
+Ran in: 5700.27 seconds
+                                    </pre>
+                                </div>
+
+                                <p class="text-justify">
+                                    Once the training has completed we can take a look at the results by generating an image from noise using the trained model like so
+                                </p>
+
+                                <div class="ms-3">
+                                    <pre><code class="python">
+# Generate a new images from noise
+fake = gen(fixed_noise)
+
+# Plot images
+example_grid_fake = torchvision.utils.make_grid(fake[:16], normalize=True)
+plt.figure()
+plt.imshow(example_grid_fake.cpu().permute([1,2,0]))
+plt.show()
+                                    </code></pre>
+                                    <div>
+                                        <strong>Output:</strong>
+                                    </div>
+                                    <img class="mb-3" src="./images/example-epoch-20000.png" alt="example result">
+                                </div>
+
+                                <p class="text-justify">
+                                    As you can see we have some images that genrally look like some of the levels we used before. Unfortuanly we don't have access to the 1000+ dataset the researchers used so our results are as good as their's. With more examples to train off the results would look a lot better.
+                                </p>
+
+                                <p class="text-justify">
+                                    This next step is optional, it allows you to save the model state to recall another time
+                                </p>
+
+                                <div class="ms-3">
+                                    <pre><code class="python">
+# Save Model
+torch.save({
+            'gen_state_dict': gen.state_dict(),
+            'dis_state_dict': dis.state_dict(),
+            'opt_gen_state_dict': opt_gen.state_dict(),
+            'opt_dis_state_dict': opt_dis.state_dict()
+            }, f"./model/model_epoch({NUM_EPOCHS})_date({datetime.datetime.utcnow().replace(microsecond=0).isoformat().replace('-', '_').replace(':', '_')}).pth")
+                                    </code></pre>
+                                </div>
+                                
+                                <p class="text-justify">
+                                    We can see the progress of our model by looking at the loss value over each epoch.
+                                    Usually the loss value of a GANs does not mean much but with a WGAN-GP it can give us an indication as to how the model performed.
+                                </p>
+
+                                                                <div class="ms-3">
+                                    <pre><code class="python">
+fig, ax = plt.subplots(figsize = (16, 9))
+ax.plot(epoch_range, G_loss, label = "Gen Loss")
+plt.plot(epoch_range, D_loss, label = "Dis Loss")
+ax.set_xlabel('Epoch')
+ax.set_ylabel('Loss')
+plt.title('Loss vs Epoch')
+plt.legend()
+plt.show()
+                                    </code></pre>
+                                    <div>
+                                        <strong>Output:</strong>
+                                    </div>
+                                    <img class="mb-3 w-75" src="./images/example-epoch-20000-loss.png" alt="example loss">
+                                </div>
+
+                                <p>
+                                    As you can see after the networks reach their peak loss values they begin to decay back and start to vary significantly as training progresses.
+                                    which is in part due to the lack of data availabe for the model to train off. We could also reduce the number of epochs to around 1500 as after this there is not much difference.
+                                </p>
+
+                                <!-- Worked Example -->
+
+                                <!-- Conclusion -->
+                                <h3 id="conclusion" class="header-colour mt-3">Conclusion</h3>
+
+                                <div class="row">
+                                    <div class="col">
+                                        <p>Human Designed</p>
+                                        <img src="./images/example-epoch-20000-real.png" class="img-fluid" alt="real images">
+                                    </div>
+
+                                    <div class="col">
+                                        <p>Produced by GAN</p>
+                                        <img src="./images/example-epoch-20000.png" class="img-fluid" alt="fake images">
+                                    </div>
+                                </div>
+
+                                <p class="text-justify">
+                                    The images produced by the GAN show promising results when compared to the real images.
+                                    Some improvements would be to use a larger dataset and maybe tweak the output function to be better suited for greyscale images.
+                                    We did however face some of the same issues regarding blurriness and noise in the images.
+                                    The researchers were however able to produce better quality images and successfully generate a playable game level for Doom.
+                                </p>
+
+                                <p class="text-justify">
+                                    The use of GANs for this sort of function could help significantly in the game industry and reduce both the cost and development time for game developers significantly.
+                                    This could also be applied to other areas of game development such as producing new textures for objects from given images.
+                                    For example, a developer could simply specify a mesh to be a brick floor or grass floor and the AI could produce a unique, autonomously generated texture for that mesh using example images.
+                                </p>
+                                <!-- Conclusion -->
+
+                                <!-- References -->
+                                <h3 id="references" class="header-colour mt-3">References</h3>
+
+                                <table>
+                                    <thead>
+                                        <th></th>
+                                        <th></th>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td id="[1]" class="pe-2">[1]</td>
+                                            <td>T. Wijman, “The World’s 2.7 Billion Gamers Will Spend $159.3 Billion on Games in 2020;
+                                                The Market Will Surpass $200 Billion by 2023,” 2020. [Online].
+                                                Available: <a href="https://newzoo.com/insights/articles/newzoo-games-market-numbers-revenues-and-audience-2020-2023/" target="_blank">https://newzoo.com/insights/articles/newzoo-games-market-numbers-revenues-and-audience-2020-2023/</a>. [Accessed 3 April 2021]
+                                            </td>
+                                        </tr>
+    
+                                        <tr>
+                                            <td id="[2]" class="pe-2">[2]</td>
+                                            <td>
+                                                A. Semuels, “'Every Game You Like Is Built on the Backs of Workers.' Video Game Creators Are Burned Out and Desperate for Change,”
+                                                Time, 11 June 2019. [Online].
+                                                Available: <a href="https://time.com/5603329/e3-video-game-creators-union/" target="_blank">https://time.com/5603329/e3-video-game-creators-union/</a>. [Accessed 3 April 2021].
+                                            </td>
+                                        </tr>
+    
+                                        <tr>
+                                            <td id="[3]" class="pe-2">[3]</td>
+                                            <td>
+                                                E. Giacomello, P. L. Lanzi and D. Loiacono, “DOOM Level Generation using Generative Adversarial Networks,” in 2018 IEEE Games, Entertainment,
+                                                Media Conference (GEM), Galway, Ireland, 2018.
+                                                Available: <a href="https://ieeexplore.ieee.org/document/8516539/" target="_blank">https://ieeexplore.ieee.org/document/8516539/</a>. [Accessed 23 February 2021]
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td id="[4]" class="pe-2">[4]</td>
+                                            <td>
+                                                Google, “Introduction | Generative Adversarial Networks | Google Developers,” Google, 24 05 2019. [Online].
+                                                Available: <a href="https://developers.google.com/machine-learning/gan" target="_blank">https://developers.google.com/machine-learning/gan</a>. [Accessed 10 March 2021].
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- References -->
+
+                            </div>
+                        </div>
+            
+                    </div>
+                    
+                </div>
+
+            </div>
+
+        </div>
+
+        
+        <!-- Optional JavaScript -->
+        <script src="./js/popper.min.js"></script>
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script> -->
+
+        <script src="./js/bootstrap.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script> -->
+
+        <script src="./js/highlight.pack.js"></script>
+        <script>hljs.highlightAll();</script>
+    </body>
+
+    <footer class="bg-dark text-light text-center mt-3">
+        <div class="container py-2">
+            <span> Harman Uppal - CS4740 Deep Learning - Aston University 2021</span>
+        </div>
+    </footer>
+</html>

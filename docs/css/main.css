@@ -1,0 +1,43 @@
+.header-colour {
+    color: rgb(211, 79, 39);
+}
+
+.jumbo-bg {
+    background-image: url('../images/jumbo-bg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.bg-tint {
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(15px);
+}
+
+.text-justify {
+    text-align: justify;
+}
+
+table td,
+table td * {
+    vertical-align: top;
+}
+
+.nav-side {
+    position: fixed;
+    left: 5%;
+    top: 40%;
+}
+
+body {
+    position: relative !important;
+}
+
+.nav-sticky {
+    top: 25%;
+}
+
+.list-group-item.active {
+    background-color: rgb(211, 79, 39);
+    border-color: rgb(211, 79, 39);
+}
