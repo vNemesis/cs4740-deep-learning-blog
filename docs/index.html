@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <title>Using deep learning to make new videogame levels | Harman Uppal</title>
+        <!-- Harman Uppal - Aston Univeristy 2021 -->
+        <title>Using deep learning to make new videogame levels</title>
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -19,7 +20,7 @@
                     <h1>Using deep learning to make new videogame levels</h1>
                     <div class="d-flex flex-row">
                         <div class="p-2">By <strong>Harman Uppal</strong></div>
-                        <div class="p-2">8<sup>th</sup> April 2021</div>
+                        <div class="p-2">9<sup>th</sup> April 2021</div>
                     </div>
                 </div>
             </div>
@@ -59,8 +60,9 @@
     
                                 <p class="text-justify">
                                     One approach being explored is the use of Deep learning to generate new game levels based on existing examples.
-                                    This involves the use of a deep learning technique such as a <strong>Generative Adversarial Network (GAN)</strong> to generate new images for levels to be created from. This blog will be based on a <a href="https://ieeexplore.ieee.org/document/8516539">research paper</a> in
-                                    2018 titled DOOM Level Generation using Generative Adversarial Networks by Edoardo Giacomello, Pier Luca Lanzi and Daniele Loiacono.
+                                    This involves the use of a deep learning technique such as a <strong>Generative Adversarial Network (GAN)</strong> to generate new images for levels to be created from.
+                                    This blog will be based on a <a href="https://ieeexplore.ieee.org/document/8516539">research paper</a> in
+                                    2018 titled <strong>DOOM Level Generation using Generative Adversarial Networks</strong> by Edoardo Giacomello, Pier Luca Lanzi and Daniele Loiacono.<sup><a href="#[3]">[3]</a></sup>
                                     We will be looking at the work they conducted and how it works to generate a new game level with a Pytorch implementation as an example.
                                 </p>
 
@@ -91,7 +93,7 @@
                                         <div class="card border-0">
                                             <img src="./images/google-gan.png" class="card-img-top" alt="google gan diagram">
                                             <div class="card-body">
-                                                <small>Source: <a href="#[4]">[4]</a> - GAN example</small>
+                                                <small>Source: <a href="#[5]">[5]</a> - GAN example</small>
                                             </div>
                                         </div>
                                     </div>
@@ -136,8 +138,8 @@
                                     <h5 class="header-colour">Loss Function</h5>
 
                                     <p class="text-justify">
-                                        A GAN is essentially trying to replicate a probability distribution; thus, their loss functions usually reflect the distance between the
-                                        distribution of generated and real data.
+                                        A GAN is essentially trying to replicate a probability distribution; thus, their loss functions usually reflect the distance between the distribution of generated and real data.
+                                        The aim of a GAN is to the probability distribution of the generator as close to the distribution of the discriminator as possible.
                                     </p>
                                     <!-- Loss Funtion -->
 
@@ -158,6 +160,25 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <p class="text-justify">
+                                        Some research has also been conducted on using GANs to translate other images or text into new generated ones. This has applications in many areas and could be especially useful for game development.
+                                        Users could define a simple drawing and given a class of object the AI could replace the parts of the image with new genreated content based on that class. For example, think of a 3D model where the textures
+                                        are just defined as labels, the AI can then take care of texturing the object based on what one should look like saving hours of creation time.
+                                    </p>
+        
+                                    <div class="row justify-content-center my-5">
+                                        <div class="col-md-8 text-center">
+                                            <div class="card border-0">
+                                                <img src="./images/translate-gan.png" class="card-img-top" alt="translate gan">
+                                                <div class="card-body">
+                                                    <small>Source: <a href="#[3]">[3]</a> - Images of GAN used to translate information into images </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
                                     <!-- Examples -->
                                 <!-- What is a GAN? -->
 
@@ -204,7 +225,27 @@
                                         <h6 class="header-colour">Wasserstein GAN with Gradient Penalty (WGAN-GP)</h6>
 
                                         <p class="text-justify">
-                                            (WGAN-GP) stuff
+                                            So how does a WGAN-GP differ from a Normal GAN?
+                                        </p>
+
+                                        <p class="text-justify">
+                                            Put simply, a WGAN uses something called Wasserstein Distance to calculate the distance between the probability distributions of the networks
+                                            as opposed to other methods such as Jensen-Shannon (JS) or Kullback-Leibler (KL) divergence.
+                                            The other methods of calculating loss may suffer from gradient issues which can result in unstable training whereas the WGAN loss is based on Wasserstein Distance.<sup><a href="#[4]">[4]</a></sup>
+                                            WGAN also enforce weight clipping on the discriminator loss to help simplify its classification and aim to improve stability.
+                                        </p>
+
+                                        
+                                        <p class="text-justify">
+                                            The GP part of WGAN-GP stands for Gradient Penalty and is an alternative to weight clipping for enforcing Lipschitz constraint.<sup><a href="#[4]">[4]</a></sup>
+                                            With weight clipping, if the parameter is too big it can take a long time for any weights to reach their limit, too small and this can lead to vanishing gradients.<sup><a href="#[4]">[4]</a></sup>
+                                            It works by taking the norm of the gradient and applies a function to it before adding it to the loss function. This results in a value that can be used to determine if the constraint is satisfied.
+                                        </p>
+
+                                        
+                                        <p class="text-justify">
+                                            The advantages of a WGAN-GP include improved stability when compared to other GANs, Meaningful loss value which correlates to the quality of the outputted data and a smaller
+                                            likelihood of mode collapse (where one class of image takes over the output.)<sup><a href="#[4]">[4]</a></sup>
                                         </p>
 
                                         <h6 class="header-colour">Architecture used</h6>
@@ -337,7 +378,8 @@
 
                                 <p class="text-justify">
                                     Now let us take a look at how we can generate our own doom levels using a GAN.
-                                    For this, we are going to use PyTorch along with various others and build a WGAN- like the one used in the paper.
+                                    For this, we are going to use PyTorch along with various others and build a WGAN-GP like the one used in the paper.
+                                    Note however that thism implimentation is going to be a less complex version in comparison.
                                 </p>
 
                                 <div class="text-justify">
@@ -512,13 +554,13 @@ transforms = torchvision.transforms.Compose(
 dataset = torchvision.datasets.ImageFolder('./doom-levels/output/floormap', transform=transforms)
 dataloader = torch.utils.data.DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
 
-# initialize gen and disc
+# Initialize gen and disc
 gen = Generator(Z_DIM, CHANNELS_IMG, FEATURES_GEN).to(device)
 dis = Discriminator(CHANNELS_IMG, FEATURES_DIS).to(device)
 initialise_weights(gen)
 initialise_weights(dis)
 
-# Initializate optimisers
+# Inisitalise optimisers
 opt_gen = optim.RMSprop(gen.parameters(), lr=LEARNING_RATE)
 opt_dis = optim.RMSprop(dis.parameters(), lr=LEARNING_RATE)
 
@@ -547,8 +589,7 @@ for epoch in epoch_range:
         real = real.to(device)
         cur_batch_size = real.shape[0]
 
-        # Train dis: max E[dis(real)] - E[dis(fake)]
-        # equivalent to minimizing the negative of that
+        # Train discriminator
         for _ in range(CRITIC_ITERATIONS):
             noise = torch.randn(cur_batch_size, Z_DIM, 1, 1).to(device)
             fake = gen(noise)
@@ -560,7 +601,7 @@ for epoch in epoch_range:
             loss_dis.backward(retain_graph=True)
             opt_dis.step()
 
-        # Train Generator: max E[dis(gen_fake)] &lt;-&gt; min -E[dis(gen_fake)]
+        # Train Generator
         gen_fake = dis(fake).reshape(-1)
         loss_gen = -torch.mean(gen_fake)
         gen.zero_grad()
@@ -568,10 +609,10 @@ for epoch in epoch_range:
         opt_gen.step()
 
         # Print loss and output to tensorboard
-        if batch_idx % BATCH_M_ONE == 0 and batch_idx &gt; 0:
+        if batch_idx % BATCH_M_ONE == 0 and batch_idx > 0:
             if epoch % 100 == 0:
                 print(
-                    f"Epoch [{epoch}/{NUM_EPOCHS}] Batch {batch_idx}/{len(dataloader)} \
+                    f"Epoch [{epoch}/{NUM_EPOCHS}] \
                     Loss D: {loss_dis:.4f}, loss G: {loss_gen:.4f}"
                 )
 
@@ -601,57 +642,27 @@ print('Ran in: {:.2f} seconds'.format(duration))
                                     <strong>Output:</strong>
                                     <pre>
 Using Device: cuda
-Epoch [0/5000] Batch 7/8                     Loss D: -1.2003, loss G: 0.8627
-Epoch [100/5000] Batch 7/8                     Loss D: -231.7849, loss G: 180.9290
-Epoch [200/5000] Batch 7/8                     Loss D: -144.5087, loss G: 160.6312
-Epoch [300/5000] Batch 7/8                     Loss D: -84.0098, loss G: 172.4509
-Epoch [400/5000] Batch 7/8                     Loss D: -99.7711, loss G: 164.7505
-Epoch [500/5000] Batch 7/8                     Loss D: -72.4993, loss G: 176.8792
-Epoch [600/5000] Batch 7/8                     Loss D: -79.5695, loss G: 211.7260
-Epoch [700/5000] Batch 7/8                     Loss D: -111.1933, loss G: 221.7308
-Epoch [800/5000] Batch 7/8                     Loss D: -83.7620, loss G: 255.3176
-Epoch [900/5000] Batch 7/8                     Loss D: -84.1290, loss G: 258.6788
-Epoch [1000/5000] Batch 7/8                     Loss D: -116.0449, loss G: 266.9394
-Epoch [1100/5000] Batch 7/8                     Loss D: -111.6538, loss G: 271.6711
-Epoch [1200/5000] Batch 7/8                     Loss D: -52.7851, loss G: 277.5142
-Epoch [1300/5000] Batch 7/8                     Loss D: -99.8798, loss G: 286.4711
-Epoch [1400/5000] Batch 7/8                     Loss D: -104.2311, loss G: 297.4313
-Epoch [1500/5000] Batch 7/8                     Loss D: -124.0095, loss G: 306.1640
-Epoch [1600/5000] Batch 7/8                     Loss D: -95.8231, loss G: 304.7676
-Epoch [1700/5000] Batch 7/8                     Loss D: -82.8644, loss G: 305.4016
-Epoch [1800/5000] Batch 7/8                     Loss D: -101.7713, loss G: 321.3476
-Epoch [1900/5000] Batch 7/8                     Loss D: -108.1830, loss G: 304.7870
-Epoch [2000/5000] Batch 7/8                     Loss D: -132.9222, loss G: 301.5773
-Epoch [2100/5000] Batch 7/8                     Loss D: -112.2191, loss G: 322.6616
-Epoch [2200/5000] Batch 7/8                     Loss D: -111.8118, loss G: 310.4772
-Epoch [2300/5000] Batch 7/8                     Loss D: -133.5703, loss G: 302.1898
-Epoch [2400/5000] Batch 7/8                     Loss D: -94.7848, loss G: 311.8337
-Epoch [2500/5000] Batch 7/8                     Loss D: -93.2101, loss G: 308.0273
-Epoch [2600/5000] Batch 7/8                     Loss D: -93.8510, loss G: 309.8764
-Epoch [2700/5000] Batch 7/8                     Loss D: -94.8602, loss G: 315.9064
-Epoch [2800/5000] Batch 7/8                     Loss D: -75.4752, loss G: 297.9471
-Epoch [2900/5000] Batch 7/8                     Loss D: -70.4469, loss G: 321.6360
-Epoch [3000/5000] Batch 7/8                     Loss D: -87.0893, loss G: 312.9343
-Epoch [3100/5000] Batch 7/8                     Loss D: -163.6199, loss G: 311.5840
-Epoch [3200/5000] Batch 7/8                     Loss D: -115.2796, loss G: 315.9883
-Epoch [3300/5000] Batch 7/8                     Loss D: -109.5242, loss G: 318.4637
-Epoch [3400/5000] Batch 7/8                     Loss D: -106.9403, loss G: 293.0496
-Epoch [3500/5000] Batch 7/8                     Loss D: -98.5639, loss G: 303.0587
-Epoch [3600/5000] Batch 7/8                     Loss D: -81.0940, loss G: 305.5038
-Epoch [3700/5000] Batch 7/8                     Loss D: -109.5650, loss G: 304.7347
-Epoch [3800/5000] Batch 7/8                     Loss D: -102.8632, loss G: 312.2042
-Epoch [3900/5000] Batch 7/8                     Loss D: -105.1151, loss G: 290.9136
-Epoch [4000/5000] Batch 7/8                     Loss D: -83.8678, loss G: 300.5930
-Epoch [4100/5000] Batch 7/8                     Loss D: -55.3448, loss G: 293.0401
-Epoch [4200/5000] Batch 7/8                     Loss D: -154.4721, loss G: 301.8219
-Epoch [4300/5000] Batch 7/8                     Loss D: -116.6979, loss G: 295.3487
-Epoch [4400/5000] Batch 7/8                     Loss D: -67.9595, loss G: 292.4657
-Epoch [4500/5000] Batch 7/8                     Loss D: -78.2038, loss G: 306.4602
-Epoch [4600/5000] Batch 7/8                     Loss D: -96.4812, loss G: 288.8483
-Epoch [4700/5000] Batch 7/8                     Loss D: -132.3809, loss G: 299.9936
-Epoch [4800/5000] Batch 7/8                     Loss D: -86.5643, loss G: 303.8985
-Epoch [4900/5000] Batch 7/8                     Loss D: -92.8402, loss G: 298.2424
-Ran in: 5700.27 seconds
+Epoch [0/2000]                       Loss D: -9.2744, loss G: 7.9561
+Epoch [100/2000]                     Loss D: -238.9778, loss G: 197.1123
+Epoch [200/2000]                     Loss D: -189.4843, loss G: 172.3683
+Epoch [300/2000]                     Loss D: -84.3057, loss G: 162.2793
+Epoch [400/2000]                     Loss D: -89.2152, loss G: 147.1767
+Epoch [500/2000]                     Loss D: -74.6092, loss G: 180.5099
+Epoch [600/2000]                     Loss D: -66.9391, loss G: 201.0979
+Epoch [700/2000]                     Loss D: -95.2644, loss G: 218.9127
+Epoch [800/2000]                     Loss D: -121.3507, loss G: 244.4263
+Epoch [900/2000]                     Loss D: -121.6439, loss G: 245.8116
+Epoch [1000/2000]                    Loss D: -106.3719, loss G: 272.9869
+Epoch [1100/2000]                    Loss D: -103.4287, loss G: 272.3478
+Epoch [1200/2000]                    Loss D: -104.5162, loss G: 283.1251
+Epoch [1300/2000]                    Loss D: -105.5495, loss G: 285.5253
+Epoch [1400/2000]                    Loss D: -71.6148, loss G: 288.8207
+Epoch [1500/2000]                    Loss D: -111.4583, loss G: 285.5058
+Epoch [1600/2000]                    Loss D: -95.5141, loss G: 287.4034
+Epoch [1700/2000]                    Loss D: -118.8947, loss G: 295.9788
+Epoch [1800/2000]                    Loss D: -120.7926, loss G: 296.0858
+Epoch [1900/2000]                    Loss D: -139.5553, loss G: 295.5967
+Ran in: 1975.19 seconds
                                     </pre>
                                 </div>
 
@@ -674,6 +685,20 @@ plt.show()
                                         <strong>Output:</strong>
                                     </div>
                                     <img class="mb-3" src="./images/example-epoch-20000.png" alt="example result">
+                                </div>
+
+                                                                <div class="ms-3">
+                                    <pre><code class="python">
+# Plot real images
+example_grid_real = torchvision.utils.make_grid(real[:16], normalize=True)
+plt.figure()
+plt.imshow(example_grid_real.cpu().permute([1,2,0]))
+plt.show()
+                                    </code></pre>
+                                    <div>
+                                        <strong>Output:</strong>
+                                    </div>
+                                    <img class="mb-3" src="./images/example-epoch-20000-real.png" alt="example real result">
                                 </div>
 
                                 <p class="text-justify">
@@ -728,7 +753,7 @@ plt.show()
                                 <!-- Conclusion -->
                                 <h3 id="conclusion" class="header-colour mt-3">Conclusion</h3>
 
-                                <div class="row">
+                                <div class="row mb-3">
                                     <div class="col">
                                         <p>Human Designed</p>
                                         <img src="./images/example-epoch-20000-real.png" class="img-fluid" alt="real images">
@@ -742,7 +767,8 @@ plt.show()
 
                                 <p class="text-justify">
                                     The images produced by the GAN show promising results when compared to the real images.
-                                    Some improvements would be to use a larger dataset and maybe tweak the output function to be better suited for greyscale images.
+                                    Some improvements would be to use a larger dataset and maybe tweak the output function to be better suited for greyscale images
+                                    as well as applying some post processing to reduce noise.
                                     We did however face some of the same issues regarding blurriness and noise in the images.
                                     The researchers were however able to produce better quality images and successfully generate a playable game level for Doom.
                                 </p>
@@ -751,6 +777,10 @@ plt.show()
                                     The use of GANs for this sort of function could help significantly in the game industry and reduce both the cost and development time for game developers significantly.
                                     This could also be applied to other areas of game development such as producing new textures for objects from given images.
                                     For example, a developer could simply specify a mesh to be a brick floor or grass floor and the AI could produce a unique, autonomously generated texture for that mesh using example images.
+                                </p>
+
+                                <p class="text-justify">
+                                    You can access the github <a href="https://github.com/vNemesis/cs4740-deep-learning-blog" target="_blank">here</a> for the code and data files.
                                 </p>
                                 <!-- Conclusion -->
 
@@ -792,8 +822,24 @@ plt.show()
                                         <tr>
                                             <td id="[4]" class="pe-2">[4]</td>
                                             <td>
+                                                I. Gulrajani, F. Ahmed, M. Arjovsky, V. Dumoulin and A. Courville, “Improved Training of Wasserstein GANs,” 2017. [Online].
+                                                Available: <a href="https://arxiv.org/abs/1704.00028v3" target="_blank">https://arxiv.org/abs/1704.00028v3</a>. [Accessed 25 March 2021].
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td id="[5]" class="pe-2">[5]</td>
+                                            <td>
                                                 Google, “Introduction | Generative Adversarial Networks | Google Developers,” Google, 24 05 2019. [Online].
                                                 Available: <a href="https://developers.google.com/machine-learning/gan" target="_blank">https://developers.google.com/machine-learning/gan</a>. [Accessed 10 March 2021].
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td id="[6]" class="pe-2">[6]</td>
+                                            <td>
+                                                alexirpan, “Read-through: Wasserstein GAN,” 22 February 2017. [Online].
+                                                Available: <a href="https://www.alexirpan.com/2017/02/22/wasserstein-gan.html" target="_blank">https://www.alexirpan.com/2017/02/22/wasserstein-gan.html</a>. [Accessed 30 March 2021].
                                             </td>
                                         </tr>
                                     </tbody>
